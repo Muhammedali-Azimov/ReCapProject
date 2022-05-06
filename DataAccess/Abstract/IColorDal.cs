@@ -3,9 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace DataAccess.Abstract
 {
-    public interface ICarDAL : IEntityRepository<Car>
+    public interface IColorDal:IEntityRepository<Color>
     {
     }
 }
