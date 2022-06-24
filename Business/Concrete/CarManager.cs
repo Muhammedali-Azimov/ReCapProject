@@ -1,4 +1,5 @@
 ﻿using Business.Abstract;
+using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
@@ -10,34 +11,35 @@ namespace Business.Concrete
 {
     public class CarManager : ICarService
     {
-        ICarDAL _carDAL;
+        readonly ICarDAL _carDAL;
 
         public CarManager(ICarDAL carDAL)
         {
             _carDAL = carDAL;
         }
 
-        public List<Car> GetAll()
+        public IDataResult<List<Car>> GetAll()
         {
-            return _carDAL.GetAll();
+            return new SuccessDataResult<List<Car>>(_carDAL.GetAll());
         }
 
 
-        public void Add(Car car)
+        public IResult Add(Car car)
         {
             if (car.Brand.Length >= 2 && car.DailyPrice > 0)
             {
                 _carDAL.Add(car);
+                return new SuccessResult();
             }
             else
             {
                 if (car.Brand.Length < 2)
                 {
-                    Console.WriteLine("Car name must be a minimum of 2 characters");
+                    return new ErrorResult("Car name must be a minimum of 2 characters");
                 }
                 else
                 {
-                    Console.WriteLine("The car daily price must be greater than 0");
+                    return new ErrorResult("The car daily price must be greater than 0");
                 }
 
             }
@@ -45,19 +47,20 @@ namespace Business.Concrete
         }
 
 
-        public List<Car> GetByColorId(int id)
+        public IDataResult<List<Car>> GetByColorId(int id)
         {
-            return _carDAL.GetAll(p => p.ColorId == id);
+            return new SuccessDataResult<List<Car>>(_carDAL.GetAll(p => p.ColorId == id));
         }
 
-        public void Update(Car car)
+        public IResult Update(Car car)
         {
             _carDAL.Update(car);
+            return new SuccessResult("Guncellendi");
         }
 
-        public List<CarDetailDto> GetCarDetails()
+        public IDataResult<List<CarDetailDto>> GetCarDetails()
         {
-            return _carDAL.GetCarDetails();
+            return new SuccessDataResult<List<CarDetailDto>>(_carDAL.GetCarDetails());
         }
     }
 }

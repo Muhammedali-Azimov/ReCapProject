@@ -15,8 +15,8 @@ namespace DataAccess.Concrete.EntityFramework
     {
         public List<CarDetailDto> GetCarDetails()
         {
-            using (TestCarDbContext context = new TestCarDbContext())
-            {
+            using TestCarDbContext context = new TestCarDbContext();
+            
                 var result = from c in context.Cars
                              join k in context.Colors
                              on c.ColorId equals k.Id
@@ -27,7 +27,7 @@ namespace DataAccess.Concrete.EntityFramework
                              };
                 return result.ToList();
 
-            }
+            
         }
     }
 }
