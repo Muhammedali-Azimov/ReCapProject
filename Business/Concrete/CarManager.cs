@@ -1,8 +1,12 @@
 ﻿using Business.Abstract;
+using Business.ValidationRules.FluentValidation;
+using Core.Aspects.Autofac.Validation;
+using Core.CrossCuttingConcerns.Validation;
 using Core.Utilities.Results;
 using DataAccess.Abstract;
 using Entities.Concrete;
 using Entities.DTOs;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,56 +15,44 @@ namespace Business.Concrete
 {
     public class CarManager : ICarService
     {
-        readonly ICarDAL _carDAL;
+        readonly ICarDal _carDal;
 
-        public CarManager(ICarDAL carDAL)
+        public CarManager(ICarDal carDal)
         {
-            _carDAL = carDAL;
+            _carDal = carDal;
         }
 
         public IDataResult<List<Car>> GetAll()
         {
-            return new SuccessDataResult<List<Car>>(_carDAL.GetAll());
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll());
         }
 
-
+        [ValidationAspect(typeof(CarValidator))]
         public IResult Add(Car car)
         {
-            if (car.Brand.Length >= 2 && car.DailyPrice > 0)
-            {
-                _carDAL.Add(car);
-                return new SuccessResult();
-            }
-            else
-            {
-                if (car.Brand.Length < 2)
-                {
-                    return new ErrorResult("Car name must be a minimum of 2 characters");
-                }
-                else
-                {
-                    return new ErrorResult("The car daily price must be greater than 0");
-                }
 
-            }
+            //ValidationTool.Validate(new CarValidator(), car);
+
+
+            _carDal.Add(car);
+            return new SuccessResult();
 
         }
-
 
         public IDataResult<List<Car>> GetByColorId(int id)
         {
-            return new SuccessDataResult<List<Car>>(_carDAL.GetAll(p => p.ColorId == id));
+            return new SuccessDataResult<List<Car>>(_carDal.GetAll(p => p.ColorId == id));
         }
 
         public IResult Update(Car car)
         {
-            _carDAL.Update(car);
+            _carDal.Update(car);
             return new SuccessResult("Guncellendi");
         }
 
         public IDataResult<List<CarDetailDto>> GetCarDetails()
         {
-            return new SuccessDataResult<List<CarDetailDto>>(_carDAL.GetCarDetails());
+            return new SuccessDataResult<List<CarDetailDto>>(_carDal.GetCarDetails());
         }
     }
 }
